@@ -1,0 +1,8 @@
+com\floragunn\searchguard\AbstractUnitTest$HttpResponse.class
+com\floragunn\searchguard\configuration\PrivilegesInterceptorImpl.class
+com\floragunn\searchguard\WildcardTests.class
+com\floragunn\searchguard\AbstractUnitTest.class
+com\floragunn\searchguard\SGTests.class
+com\floragunn\searchguard\AlwaysFalseInterClusterRequestEvaluator.class
+com\floragunn\searchguard\AbstractUnitTest$TransportClientImpl.class
+com\floragunn\searchguard\AbstractUnitTest$1.class
