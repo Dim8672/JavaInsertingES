@@ -2,8 +2,8 @@
 
 #Search Guard 5 for Elasticsearch 5
 
-This tools was download in the GitHub of official Compose Transporter here : https://github.com/compose/transporter
+This software was download in the GitHub of official Transporter here : https://github.com/floragunncom/search-guard
 
 ## Adaptation in CityFlow
 
-I generate the transporter.exe and we just have to set the mongodb URI and ElasticSearch URI.
+The classes that I made in the package "ch.hearc.ig.tb.cityFlow.* are able to put random Data in an ElasticSearch Instance for a CityFlow Project.
