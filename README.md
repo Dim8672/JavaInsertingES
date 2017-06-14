@@ -2,7 +2,7 @@
 
 #Search Guard 5 for Elasticsearch 5
 
-This software was download in the GitHub of official Transporter here : https://github.com/floragunncom/search-guard
+This software was download in the GitHub of official SearchGuard here : https://github.com/floragunncom/search-guard
 
 ## Adaptation in CityFlow
 
