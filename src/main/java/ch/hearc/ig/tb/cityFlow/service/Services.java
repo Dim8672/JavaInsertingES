@@ -41,6 +41,7 @@ public class Services {
     private TransportClient client;
     private SearchElasticSearch searchElastic;
     private InsertElasticSearch insertElastic;
+    private Integer testingInsert;
 
     /**
      * Constructor for Services
@@ -52,6 +53,7 @@ public class Services {
         this.users = new HashMap<String, ArrayList<String>>();
         this.searchElastic = new SearchElasticSearch();
         this.insertElastic = new InsertElasticSearch();
+        this.testingInsert = 0;
     }
     /**
      * Method used for generating random data for ElasticSearch
@@ -151,7 +153,13 @@ public class Services {
             this.client.close();
             this.generateClient();
             if(traject){
-                this.insertElastic.putDataTrajectoryFacts(client, "2017-01-01T01:00:00", formatter, formatter.format(new Date()), this); // Put the trajectory Facts generating with the news facts
+                if(testingInsert == 0) {
+                   this.insertElastic.putDataTrajectoryFacts(client, "2017-01-01T01:00:00", formatter, formatter.format(new Date()), this); // Put the trajectory Facts generating with the news facts 
+                   this.testingInsert++;
+                } else {
+                    this.insertElastic.putDataTrajectoryFacts(client, "2017-05-25T22:00:00", formatter, formatter.format(new Date()), this); // Put the trajectory Facts generating with the news facts 
+                }
+                
             }    
         } // Chnager la date en dure pour le else, pour le moment je fais comme ça à cause de mes données fictives, mais dans un environnement réelle, on prend la dernière date d'insert.
         this.closeClient(); // closing the ES Client

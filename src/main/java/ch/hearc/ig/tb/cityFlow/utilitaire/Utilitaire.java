@@ -34,6 +34,7 @@ public class Utilitaire {
     private Map<Integer, Person> people;
     private List<String> manufacturers;
     private List<String> genders;
+    private List<String> locomotions;
     private Random random;
     private Calendar calendar;
     private DateFormat formatter;
@@ -47,6 +48,7 @@ public class Utilitaire {
         this.people = new HashMap<>();
         this.manufacturers = new ArrayList<>(Arrays.asList("Apple","Huawei","Sony","Samsung","Nokia","LG"));
         this.genders = new ArrayList<>(Arrays.asList("Homme","Femme"));
+        this.locomotions = new ArrayList<>(Arrays.asList("Pied","Voiture","Vélo","Camion"));
         this.random = new Random();
         this.calendar = Calendar.getInstance();
         formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -57,6 +59,10 @@ public class Utilitaire {
             instance = new Utilitaire();
         }       
         return instance;     
+    }
+
+    public List<String> getLocomotions() {
+        return locomotions;
     }
 
     public Map<String, Device> getDevices() {
@@ -92,7 +98,7 @@ public class Utilitaire {
      */
     public void generatePerson(Integer numberOfPeople){
         for(int i = 0; i < numberOfPeople; i++){
-            this.people.put(i, new Person(randomMacAdresse(),this.manufacturers.get(random.nextInt(manufacturers.size())),this.genders.get(random.nextInt(genders.size())),random.nextInt(80)));
+            this.people.put(i, new Person(randomMacAdresse(),this.manufacturers.get(random.nextInt(manufacturers.size())),this.genders.get(random.nextInt(genders.size())),random.nextInt(80),locomotions.get(random.nextInt(locomotions.size()))));
         }
     }
     /**

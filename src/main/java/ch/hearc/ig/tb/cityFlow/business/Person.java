@@ -13,14 +13,24 @@ package ch.hearc.ig.tb.cityFlow.business;
 public class Person {
     private String macAdresse;
     private String manufacturer;
+    private String locomotion;
     private String gender;
     private Integer age;
 
-    public Person(String macAdresse, String manufacturer, String gender, Integer age) {
+    public Person(String macAdresse, String manufacturer, String gender, Integer age, String locomotion) {
         this.macAdresse = macAdresse;
         this.manufacturer = manufacturer;
         this.gender = gender;
         this.age = age;
+        this.locomotion = locomotion;
+    }
+
+    public String getLocomotion() {
+        return locomotion;
+    }
+
+    public void setLocomotion(String locomotion) {
+        this.locomotion = locomotion;
     }
 
     public String getMacAdresse() {

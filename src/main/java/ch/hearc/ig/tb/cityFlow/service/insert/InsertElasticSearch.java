@@ -96,6 +96,7 @@ public class InsertElasticSearch {
                         .field("lastSignal", random.nextInt(40))
                         .field("minSignal", random.nextInt(40))
                         .field("maxSignal", random.nextInt(40))
+                        .field("locomotion", person.getLocomotion())
                         .startObject("seenBy")
                         .field("deviceId", device.getId())
                         .field("deviceName", device.getName())
@@ -105,6 +106,7 @@ public class InsertElasticSearch {
                         .endObject()
                         .endObject()
                         .field("insertDate", insertDate)
+                        .field("timeEvent", formatter.format(firstSeen))
                         .endObject()));
 
             } catch (IOException ex) {
@@ -165,7 +167,7 @@ public class InsertElasticSearch {
                             // System.out.println("MacAdresseWithTraject : "+ from.getString("macAdresse"));
                             traject.setFrom(utils.getDevices().get(from.getJSONObject("seenBy").getString("deviceName")));
                             traject.setTo(utils.getDevices().get(to.getJSONObject("seenBy").getString("deviceName")));
-                            traject.setPerson(new Person(from.getString("macAdresse"), from.getString("manufacturer"), from.getString("gender"), from.getInt("age")));
+                            traject.setPerson(new Person(from.getString("macAdresse"), from.getString("manufacturer"), from.getString("gender"), from.getInt("age"), from.getString("locomotion")));
                             traject.setFromFirstSeen(formatter.parse(from.getString("firstSeen")));
                             traject.setFromLastSeen(formatter.parse(from.getString("lastSeen")));
                             traject.setToFirstSeen(formatter.parse(to.getString("firstSeen")));
@@ -173,18 +175,33 @@ public class InsertElasticSearch {
 
                             bulkRequest.add(client.prepareIndex("cityflow", "traject").setSource(jsonBuilder()
                                     .startObject()
-                                    .field("from", traject.getFrom().getName())
-                                    .field("to", traject.getTo().getName())
-                                    .field("macAdresse", traject.getPerson().getMacAdresse())
-                                    .field("manufacturer", traject.getPerson().getManufacturer())
-                                    .field("gender", traject.getPerson().getGender())
-                                    .field("age", traject.getPerson().getAge())
-                                    .field("fromFirstSeen", formatter.format(traject.getFromFirstSeen()))
-                                    .field("fromLastSeen", formatter.format(traject.getFromLastSeen()))
-                                    .field("toFirstSeen", formatter.format(traject.getToFirstSeen()))
-                                    .field("toLastSeen", formatter.format(traject.getToLastSeen()))
+                                        .field("macAdresse", traject.getPerson().getMacAdresse())
+                                        .field("manufacturer", traject.getPerson().getManufacturer())
+                                        .field("gender", traject.getPerson().getGender())
+                                        .field("age", traject.getPerson().getAge())
+                                        .startObject("from")
+                                            .field("id", traject.getFrom().getId())
+                                            .field("name", traject.getFrom().getName())
+                                            .field("firstSeen", formatter.format(traject.getFromFirstSeen()))
+                                            .field("lastSeen", formatter.format(traject.getFromLastSeen()))
+                                            .startObject("location")
+                                                .field("lat", traject.getFrom().getLatitude())
+                                                .field("lon", traject.getFrom().getLongitdue())
+                                            .endObject()
+                                        .endObject()
+                                        .startObject("to")
+                                            .field("id", traject.getTo().getId())
+                                            .field("name", traject.getTo().getName())
+                                            .field("firstSeen", formatter.format(traject.getToFirstSeen()))
+                                            .field("lastSeen", formatter.format(traject.getToLastSeen()))
+                                            .startObject("location")
+                                                .field("lat", traject.getTo().getLatitude())
+                                                .field("lon", traject.getTo().getLongitdue())
+                                            .endObject()
+                                        .endObject()
                                     .field("insertDate", insertDate)
                                     .field("duration", traject.getToFirstSeen().getTime() - traject.getFromLastSeen().getTime())
+                                    .field("timeEvent", formatter.format(traject.getFromFirstSeen()))
                                     .endObject()));
 
                             inserting = true;
