@@ -10,6 +10,8 @@ import ch.hearc.ig.tb.cityFlow.service.search.SearchElasticSearch;
 import ch.hearc.ig.tb.cityFlow.utilitaire.Utilitaire;
 import com.floragunn.searchguard.SearchGuardPlugin;
 import com.floragunn.searchguard.ssl.util.SSLConfigConstants;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,6 +21,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.elasticsearch.client.transport.TransportClient;
@@ -29,8 +34,7 @@ import org.elasticsearch.transport.Netty4Plugin;
 
 /**
  *
- * @author Dimitri
- * Services Classes used for inserting Data in ElasticSearch
+ * @author Dimitri Services Classes used for inserting Data in ElasticSearch
  */
 public class Services {
 
@@ -42,6 +46,7 @@ public class Services {
     private SearchElasticSearch searchElastic;
     private InsertElasticSearch insertElastic;
     private Integer testingInsert;
+    private Properties prop;
 
     /**
      * Constructor for Services
@@ -54,9 +59,12 @@ public class Services {
         this.searchElastic = new SearchElasticSearch();
         this.insertElastic = new InsertElasticSearch();
         this.testingInsert = 0;
+        this.prop = new Properties();
     }
+
     /**
      * Method used for generating random data for ElasticSearch
+     *
      * @param numberPerson the number of Person to generate
      */
     public void generateStaticData(Integer numberPerson) {
@@ -112,14 +120,20 @@ public class Services {
      * Setting settings for elasticSearch and SearchGuard
      */
     public void setSettings() {
+        InputStream stream = this.getClass().getResourceAsStream("/configuration.properties");
+        try {
+            prop.load(stream);
+        } catch (IOException ex) {
+            Logger.getLogger(Services.class.getName()).log(Level.SEVERE, null, ex);
+        }
         final Settings.Builder settingsBuilder = Settings
                 .builder()
                 .put("path.home", ".")
                 .put("path.conf", ".")
-                .put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_KEYSTORE_FILEPATH, "C:\\Users\\dimitri.mella\\Desktop\\ElasticAuthentification\\elasticsearch-5.3.0-localhost\\config\\CN=localhost-keystore.jks")
-                .put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_TRUSTSTORE_FILEPATH, "C:\\Users\\dimitri.mella\\Desktop\\ElasticAuthentification\\elasticsearch-5.3.0-localhost\\config\\truststore.jks")
-                .put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_KEYSTORE_PASSWORD, "fa5f481f1a5df359de86")
-                .put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_TRUSTSTORE_PASSWORD, "1b2775b49b7905d36c76")
+                .put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_KEYSTORE_FILEPATH, prop.getProperty("SEARCHGUARD_SSL_TRANSPORT_KEYSTORE_FILEPATH"))
+                .put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_TRUSTSTORE_FILEPATH, prop.getProperty("SEARCHGUARD_SSL_TRANSPORT_TRUSTSTORE_FILEPATH"))
+                .put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_KEYSTORE_PASSWORD, prop.getProperty("SEARCHGUARD_SSL_TRANSPORT_KEYSTORE_PASSWORD"))
+                .put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_TRUSTSTORE_PASSWORD, prop.getProperty("SEARCHGUARD_SSL_TRANSPORT_TRUSTSTORE_PASSWORD"))
                 .put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_ENFORCE_HOSTNAME_VERIFICATION, !true)
                 .put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_ENFORCE_HOSTNAME_VERIFICATION_RESOLVE_HOST_NAME, !true)
                 .put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_ENABLED, true)
@@ -134,14 +148,15 @@ public class Services {
 
     /**
      * Generate random Facts in ElasticSearch
+     *
      * @param numberFact number of Fact to Generate
      * @param start Start Date
      * @param end End Date
-     * @param deviceName The name of the devices which the facts will be link 
+     * @param deviceName The name of the devices which the facts will be link
      */
     public void generateDataFacts(Integer numberFact, String start, String end, String deviceName, boolean traject) {
         this.generateClient(); // Generating the client which will be used to communicate with ES
-        if (this.searchElastic.factsEmtpy(this.client)){
+        if (this.searchElastic.factsEmtpy(this.client)) {
             this.insertElastic.putDataRealFacts(client, numberFact, start, end, deviceName, formatter, formatter.format(new Date())); // Put the new Facts in ElasticSearch
             this.client.close();
             this.generateClient();
@@ -152,34 +167,34 @@ public class Services {
             this.insertElastic.putDataRealFacts(client, numberFact, start, end, deviceName, formatter, formatter.format(new Date())); // Put the new Facts in ElasticSearch
             this.client.close();
             this.generateClient();
-            if(traject){
-                if(testingInsert == 0) {
-                   this.insertElastic.putDataTrajectoryFacts(client, "2017-01-01T01:00:00", formatter, formatter.format(new Date()), this); // Put the trajectory Facts generating with the news facts 
-                   this.testingInsert++;
+            if (traject) {
+                if (testingInsert == 0) {
+                    this.insertElastic.putDataTrajectoryFacts(client, "2017-01-01T01:00:00", formatter, formatter.format(new Date()), this); // Put the trajectory Facts generating with the news facts 
+                    this.testingInsert++;
                 } else {
                     this.insertElastic.putDataTrajectoryFacts(client, "2017-05-25T22:00:00", formatter, formatter.format(new Date()), this); // Put the trajectory Facts generating with the news facts 
                 }
-                
-            }    
+
+            }
         } // Chnager la date en dure pour le else, pour le moment je fais comme ça à cause de mes données fictives, mais dans un environnement réelle, on prend la dernière date d'insert.
         this.closeClient(); // closing the ES Client
     }
-    
+
     /**
      * Method used for generating a client connexion for ES
      */
-    public void generateClient(){
+    public void generateClient() {
         this.client = new Services.TransportClientImpl(this.settings, asCollection(Netty4Plugin.class, SearchGuardPlugin.class))
                 .addTransportAddress(new InetSocketTransportAddress(new InetSocketAddress("157.26.64.147", 9300)));
     }
-    
+
     /**
      * Method for closing the client connexion for ES
      */
-    private void closeClient(){
+    private void closeClient() {
         this.client.close();
     }
-    
+
     /**
      * Under Classes for the TransportClientImplementation
      */
@@ -196,6 +211,7 @@ public class Services {
 
     /**
      * Under classes for the collection
+     *
      * @param plugins
      * @return a collection
      */
