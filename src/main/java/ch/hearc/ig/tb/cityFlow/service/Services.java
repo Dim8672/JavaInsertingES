@@ -185,7 +185,7 @@ public class Services {
      */
     public void generateClient() {
         this.client = new Services.TransportClientImpl(this.settings, asCollection(Netty4Plugin.class, SearchGuardPlugin.class))
-                .addTransportAddress(new InetSocketTransportAddress(new InetSocketAddress("157.26.64.147", 9300)));
+                .addTransportAddress(new InetSocketTransportAddress(new InetSocketAddress(prop.getProperty("ElasticSearch.server"), 9300)));
     }
 
     /**
