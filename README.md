@@ -15,6 +15,7 @@ SEARCHGUARD_SSL_TRANSPORT_KEYSTORE_PASSWORD : Mot de passe keystore (se trouve d
 SEARCHGUARD_SSL_TRANSPORT_TRUSTSTORE_PASSWORD : Mot de passe trustore (se trouve dans le fichier de configuration d'ElasticSearch) <br/>
 SEARCHGUARD_SSL_TRANSPORT_KEYSTORE_FILEPATH : Chemin d'accès au fichier keystore.jks <br/>
 SEARCHGUARD_SSL_TRANSPORT_TRUSTSTORE_FILEPATH : Chemin d'accès au fichier trustore.jks <br/>
+ElasticSearch.server : l'URL du serveur ElasticSearch <br/>
 
 La classe principale se trouve dans le dossier src.main.ch.hearc.ig.tb.cityFlow.application. La logique est la suivante :
 
